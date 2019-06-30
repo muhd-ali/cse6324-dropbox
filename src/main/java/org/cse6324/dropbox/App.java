@@ -1,21 +1,11 @@
 package org.cse6324.dropbox;
 
-import org.cse6324.dropbox.server.Server;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-/**
- * Hello world!
- */
-public final class App {
-    private App() {
-    }
-
-    /**
-     * Says hello to the world.
-     * 
-     * @param args The arguments of the program.
-     */
+@SpringBootApplication
+public class App {
     public static void main(String[] args) {
-        Server server = new Server();
-        server.start();
+        SpringApplication.run(App.class, args);
     }
 }
