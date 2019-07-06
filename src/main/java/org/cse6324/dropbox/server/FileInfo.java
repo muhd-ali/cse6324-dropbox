@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -31,10 +30,6 @@ public class FileInfo {
         File f = filepath.toFile();
         lastModified = f.lastModified();
         hash = generateMD5(filepath);
-    }
-
-    Path withRespectTo(Path userPath) {
-        return userPath.relativize(Paths.get(filepath));
     }
 
     FileInfo(JSONObject json) {
