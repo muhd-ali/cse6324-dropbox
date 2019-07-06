@@ -3,15 +3,14 @@ package org.cse6324.dropbox.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.json.JSONObject;
 
 /**
  * FileInfo
@@ -27,14 +26,51 @@ public class FileInfo {
         this.lastModified = lastModified;
     }
 
-    FileInfo(Path path) {
-        filepath = path.toString();
-        File f = path.toFile();
+    FileInfo(Path filepath, Path userPath) {
+        this.filepath = userPath.relativize(filepath).toString();
+        File f = filepath.toFile();
         lastModified = f.lastModified();
-        hash = generateMD5(path);
+        hash = generateMD5(filepath);
     }
 
-    private static String generateMD5(Path path){
+    Path withRespectTo(Path userPath) {
+        return userPath.relativize(Paths.get(filepath));
+    }
+
+    FileInfo(JSONObject json) {
+        filepath = json.getString("filepath");
+        hash = json.getString("hash");
+        lastModified = Long.parseLong(json.getString("lastModified"));
+    }
+
+    JSONObject json() {
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put("filepath", filepath);
+        jsonObj.put("hash", hash);
+        jsonObj.put("lastModified", lastModified.toString());
+        return jsonObj;
+    }
+
+    @Override
+    public String toString() {
+        return json().toString();
+    }
+
+    boolean isSameAs(FileInfo other) {
+        return (
+            hasSamePathAs(other) &&
+            hash.equals(other.hash) &&
+            lastModified.equals(other.lastModified)
+        );
+    }
+
+    boolean hasSamePathAs(FileInfo other) {
+        return (
+            filepath.equals(other.filepath)
+        );
+    }
+
+    private static String generateMD5(Path path) {
         MessageDigest md;
         FileInputStream inputStream = null;
         try {
@@ -42,31 +78,25 @@ public class FileInfo {
             md = MessageDigest.getInstance("MD5");
             FileChannel channel = inputStream.getChannel();
             ByteBuffer buff = ByteBuffer.allocate(2048);
-            while(channel.read(buff) != -1)
-            {
+            while (channel.read(buff) != -1) {
                 buff.flip();
                 md.update(buff);
                 buff.clear();
             }
             byte[] hashValue = md.digest();
             return new String(hashValue);
-        }
-        catch (NoSuchAlgorithmException e)
-        {
+        } catch (NoSuchAlgorithmException e) {
             return null;
-        } 
-        catch (IOException e) 
-        {
+        } catch (IOException e) {
             return null;
-        }
-        finally
-        {
+        } finally {
             try {
-                if(inputStream!=null)inputStream.close();
+                if (inputStream != null)
+                    inputStream.close();
             } catch (IOException e) {
-    
+
             }
-        } 
+        }
     }
 
     /**
