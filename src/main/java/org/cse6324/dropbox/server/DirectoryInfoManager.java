@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
  * DirectoryInfoManager
  */
 public class DirectoryInfoManager {
-    private File directory;
+    private Path directory;
 
     private static class MetaDataManager {
         static private String getDirectoryInfoPathInUserDirectory() {
@@ -121,10 +121,11 @@ public class DirectoryInfoManager {
 
 
     DirectoryInfoManager(String userDataDirectoryPath) {
-        directory = new File(userDataDirectoryPath);
-        if (!directory.exists()) {
-            directory.mkdir();
+        File dir = new File(userDataDirectoryPath);
+        if (!dir.exists()) {
+            dir.mkdir();
         }
+        directory = dir.toPath();
     }
 
     // FileInfo[] getNewInfo(String userFolder) {
@@ -139,19 +140,19 @@ public class DirectoryInfoManager {
     // }
 
     FileInfo[] readExisitngFileInfoFor(String userID) {
-        Path userPath = directory.toPath().resolve(userID);
+        Path userPath = directory.resolve(userID);
         return MetaDataManager.readExisitngFileInfoFor(userPath);
     }
 
     FileInfo[] readDeletedFileInfoFor(String userID) {
-        Path userPath = directory.toPath().resolve(userID);
+        Path userPath = directory.resolve(userID);
         return MetaDataManager.readDeletedFileInfoFor(userPath);
     }
 
     boolean saveUserFile(String userID, MultipartFile file, String filepathString) {
         try {
             byte[] bytes = file.getBytes();
-            Path userPath = directory.toPath().resolve(userID);
+            Path userPath = directory.resolve(userID);
             Path filePath = userPath.resolve(filepathString);
             filePath.getParent().toFile().mkdirs();
             Files.write(filePath, bytes);
@@ -163,9 +164,13 @@ public class DirectoryInfoManager {
         }
     }
 
+    Path fullPathForUser(String userID, String filepathString) {
+        return directory.resolve(userID).resolve(filepathString);
+    }
+
     boolean deleteUserFile(String userID, String filepathString) {
-        Path filePath = directory.toPath().resolve(userID).resolve(filepathString);
-        Path userPath = directory.toPath().resolve(userID);
+        Path filePath = directory.resolve(userID).resolve(filepathString);
+        Path userPath = directory.resolve(userID);
         File file = filePath.toFile();
         if (file.exists()) {
             MetaDataManager.saveFileInfoToDeleted(userPath, filePath);

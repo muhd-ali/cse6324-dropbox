@@ -4,9 +4,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Base64;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +36,10 @@ public class Server {
     }
 
     @GetMapping("/{id}/file/{filepathBase64}")
-    public FileSystemResource downloadFile(@PathVariable("id") String userID, @PathVariable String filepathBase64) {
-        String filepath = new String(Base64.getDecoder().decode(filepathBase64));
+    public Resource downloadFile(@PathVariable("id") String userID, @PathVariable String filepathBase64, HttpServletResponse response) throws IOException {
+        String filepathString = new String(Base64.getDecoder().decode(filepathBase64));
+        Path filepath = DirectoryInfoManager.shared.fullPathForUser(userID, filepathString);
+        response.setHeader("Content-Disposition", "attachment; filename=" + filepath.getFileName());
         return new FileSystemResource(filepath);
     }
 
