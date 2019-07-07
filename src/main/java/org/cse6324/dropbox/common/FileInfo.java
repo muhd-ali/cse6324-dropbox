@@ -1,4 +1,4 @@
-package org.cse6324.dropbox.server;
+package org.cse6324.dropbox.common;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,26 +19,26 @@ public class FileInfo {
     String hash;
     Long lastModified;
 
-    FileInfo(String filepath, String hash, Long lastModified) {
+    public FileInfo(String filepath, String hash, Long lastModified) {
         this.filepath = filepath;
         this.hash = hash;
         this.lastModified = lastModified;
     }
 
-    FileInfo(Path filepath, Path userPath) {
+    public FileInfo(Path filepath, Path userPath) {
         this.filepath = userPath.relativize(filepath).toString();
         File f = filepath.toFile();
         lastModified = f.lastModified();
         hash = generateMD5(filepath);
     }
 
-    FileInfo(JSONObject json) {
+    public FileInfo(JSONObject json) {
         filepath = json.getString("filepath");
         hash = json.getString("hash");
         lastModified = Long.parseLong(json.getString("lastModified"));
     }
 
-    JSONObject json() {
+    public JSONObject json() {
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("filepath", filepath);
         jsonObj.put("hash", hash);
@@ -59,7 +59,7 @@ public class FileInfo {
         );
     }
 
-    boolean hasSamePathAs(FileInfo other) {
+    public boolean hasSamePathAs(FileInfo other) {
         return (
             filepath.equals(other.filepath)
         );
@@ -111,8 +111,8 @@ public class FileInfo {
     /**
      * @return the lastModified
      */
-    public Long getLastModified() {
-        return lastModified;
+    public String getLastModified() {
+        return lastModified.toString();
     }
 
     static FileInfo example() {

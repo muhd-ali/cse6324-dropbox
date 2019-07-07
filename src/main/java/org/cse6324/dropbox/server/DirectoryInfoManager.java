@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.cse6324.dropbox.common.FileInfo;
 // import java.util.ArrayList;
 // import java.util.List;
 // import java.util.stream.Collectors;
@@ -121,7 +122,7 @@ public class DirectoryInfoManager {
 
 
     DirectoryInfoManager(String userDataDirectoryPath) {
-        File dir = new File(userDataDirectoryPath);
+        File dir = Paths.get(".", userDataDirectoryPath).toFile();
         if (!dir.exists()) {
             dir.mkdir();
         }
@@ -179,5 +180,5 @@ public class DirectoryInfoManager {
         return false;
     }
 
-    static DirectoryInfoManager shared = new DirectoryInfoManager("userdata/");
+    static DirectoryInfoManager shared = new DirectoryInfoManager("userdata");
 }

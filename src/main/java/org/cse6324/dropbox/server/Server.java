@@ -7,6 +7,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Base64;
+import org.cse6324.dropbox.common.FileInfo;
+
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -60,13 +62,8 @@ public class Server {
         RedirectAttributes redirectAttributes
     ) {
         String filepath = new String(Base64.getDecoder().decode(filepathBase64));
-        if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
-        }
         if (DirectoryInfoManager.shared.saveUserFile(userID, file, filepath)) {
-            redirectAttributes.addFlashAttribute("message",
-            "You successfully uploaded '" + file.getOriginalFilename() + "'");
+            return ResponseEntity.status(HttpStatus.ACCEPTED).build();
         }
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
