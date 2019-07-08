@@ -59,7 +59,6 @@ public class DirectoryInfoManager {
         private static int indexOf(FileInfo fileInfo, JSONArray array) {
             for (int i = 0; i < array.length(); i++) {
                 FileInfo curr = new FileInfo(array.getJSONObject(i));
-                System.out.println(curr);
                 if (curr.hasSamePathAs(fileInfo)) {
                     return i;
                 }
