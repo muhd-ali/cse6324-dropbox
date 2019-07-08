@@ -57,8 +57,6 @@ public class DirectoryInfoManager {
         }
 
         private static int indexOf(FileInfo fileInfo, JSONArray array) {
-            System.out.println(fileInfo);
-            System.out.println("******************");
             for (int i = 0; i < array.length(); i++) {
                 FileInfo curr = new FileInfo(array.getJSONObject(i));
                 System.out.println(curr);
@@ -128,17 +126,6 @@ public class DirectoryInfoManager {
         }
         directory = dir.toPath();
     }
-
-    // FileInfo[] getNewInfo(String userFolder) {
-    //     List<FileInfo> fileInfos = new ArrayList<>();
-    //     try {
-    //         fileInfos = Files.walk(Paths.get(directory.getAbsolutePath(), userFolder)).filter(Files::isRegularFile)
-    //                 .parallel().map(FileInfo::new).collect(Collectors.toList());
-    //     } catch (Exception e) {
-    //         System.out.println(e);
-    //     }
-    //     return fileInfos.toArray(new FileInfo[fileInfos.size()]);
-    // }
 
     FileInfo[] readExisitngFileInfoFor(String userID) {
         Path userPath = directory.resolve(userID);
